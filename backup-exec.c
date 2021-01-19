@@ -1,5 +1,5 @@
 /*
- * gcc -DEXEC_BIN='"/sbin/capsh"' -o capsh backup-exec.c -lcap-ng
+ * gcc -o capsh -DEXEC_BIN='"/sbin/capsh"' backup-exec.c -lcap-ng
  * sudo setcap "cap_dac_read_search=+eip cap_setpcap=+ep" capsh
  *
  * Adapted from: https://gist.github.com/infinity0/596845b5eea3e1a02a018009b2931a39

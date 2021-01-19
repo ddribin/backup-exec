@@ -6,7 +6,7 @@ This requires [`libcap-ng`](https://github.com/stevegrubb/libcap-ng), which can 
 
 To compile:
 
-    $ gcc -DEXEC_BIN='"/sbin/capsh"' -o capsh backup-exec.c -lcap-ng
+    $ gcc -o capsh -DEXEC_BIN='"/sbin/capsh"' backup-exec.c -lcap-ng
  
  Then add the capabilities on the resulting binary:
  
@@ -26,6 +26,6 @@ Then compile:
 
     % docker run --rm -v "$PWD":/work backup-exec gcc -o capsh -DEXEC_BIN='"/sbin/capsh"' backup-exec.c -lcap-ng
 
-As a more practicle example, here's how to create a wrapper for the for the [Borg Backup](https://www.borgbackup.org) binary:
+As a more practical example, here's how to create a wrapper for the for the [Borg Backup](https://www.borgbackup.org) binary:
 
     $ docker run --rm -v "$PWD":/work backup-exec gcc -o build/borg -DDEBUG=1 -DEXEC_BIN='"/home/linuxbrew/.linuxbrew/opt/borg-libexec/libexec/borg"' backup-exec.c -lcap-ng
