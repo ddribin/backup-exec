@@ -28,4 +28,4 @@ Then compile:
 
 As a more practical example, here's how to create a wrapper for the for the [Borg Backup](https://www.borgbackup.org) binary:
 
-    $ docker run --rm -v "$PWD":/work backup-exec gcc -o build/borg -DDEBUG=1 -DEXEC_BIN='"/home/linuxbrew/.linuxbrew/opt/borg-libexec/libexec/borg"' backup-exec.c -lcap-ng
+    $ docker run --rm -v "$PWD":/work backup-exec gcc -o build/borg -DDEBUG=1 -DEXEC_BIN='"/usr/local/libexec/borg"' backup-exec.c -lcap-ng
