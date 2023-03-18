@@ -1,4 +1,8 @@
+# Overview
+
 Creates wrapper executables intended for backing up files. The wrapper uses the `CAP_DAC_READ_SEARCH` capability to allow backup programs to read any file without having `root` privileges. See [`capabilities(7)`](https://man7.org/linux/man-pages/man7/capabilities.7.html) for more about this capability.
+
+# Compiling
 
 This requires [`libcap-ng`](https://github.com/stevegrubb/libcap-ng), which can be installed with `apt`:
 
@@ -40,9 +44,10 @@ Note that it does not matter what the executbale name is. It always re-`execs` a
     Modified:
     0: </sbin/capsh>
     1: <--print>
+    Current: = cap_dac_read_search+eip
     ...
 
-## Docker
+# Compling with Docker
 
 To compile using the Docker image, first build the image:
 
