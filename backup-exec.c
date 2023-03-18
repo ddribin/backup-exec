@@ -34,22 +34,35 @@ static void set_ambient_cap(int cap)
     }
 }
 
+static void verbose_print_arguments(const char *label, int argc, char **argv)
+{
+    // Output arguments if BACKUP_EXEC_VERBOSE=1
+    const char *backup_exec_verbose = getenv("BACKUP_EXEC_VERBOSE");
+    if ((backup_exec_verbose != NULL) &&
+        (strcmp(backup_exec_verbose, "1") == 0))
+    {
+        fprintf(stderr, "%s\n", label);
+        for (int i = 0; i < argc; i++) {
+            fprintf(stderr, "%d: <%s>\n", i, argv[i]);
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
+    verbose_print_arguments("Original:", argc, argv);
+
     set_ambient_cap(CAP_DAC_READ_SEARCH);
 
     // Allocate argc+1 for trailing NULL
     char **new_argv = malloc(sizeof(char *) * argc+1);
     memcpy(new_argv, argv, sizeof(char *) * argc);
+    // Replace argv[0] with EXEC_BIN
     new_argv[0] = EXEC_BIN;
     new_argv[argc] = NULL;
 
-#if DEBUG
-    for (int i = 0; i < argc; i++) {
-      fprintf(stderr, "%d: <%s>\n", i, new_argv[i]);
-    }
-#endif
-    
+    verbose_print_arguments("Modified:", argc, new_argv);
+
     execv(new_argv[0], new_argv);
     fprintf(stderr, "Cannot exec: %d %s\n", errno, strerror(errno));
     perror("Cannot exec");
