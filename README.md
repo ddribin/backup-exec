@@ -50,7 +50,7 @@ To compile using the Docker image, first build the image:
 
 Then compile:
 
-    docker run --rm -v "$PWD":/work backup-exec gcc -o buid/capsh -DEXEC_BIN='"/sbin/capsh"' backup-exec.c -lcap-ng
+    docker run --rm -v "$PWD":/work backup-exec gcc -o build/capsh -DEXEC_BIN='"/sbin/capsh"' backup-exec.c -lcap-ng
 
 As a more practical example, here's how to create a wrapper for the for the [Borg backup](https://www.borgbackup.org) binary:
 
