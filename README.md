@@ -2,7 +2,7 @@
 
 Creates wrapper executables intended for backing up files. The wrapper uses the `CAP_DAC_READ_SEARCH` capability to allow backup programs to read any file without having `root` privileges. See [`capabilities(7)`](https://man7.org/linux/man-pages/man7/capabilities.7.html) for more about this capability.
 
-# Compiling
+# Compiling and Running
 
 This requires [`libcap-ng`](https://github.com/stevegrubb/libcap-ng), which can be installed with `apt`:
 
