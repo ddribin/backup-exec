@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <sys/prctl.h>
 #include <linux/capability.h>
 #include <cap-ng.h>
@@ -15,6 +17,10 @@
 #ifndef EXEC_BIN
 #define EXEC_BIN "/sbin/capsh"
 #warning Defaulting to EXEC_BIN
+#endif
+
+#ifndef VERSION
+#define VERSION "HEAD (" __DATE__ " " __TIME__ ")"
 #endif
 
 static void set_ambient_cap(int cap)
@@ -34,13 +40,22 @@ static void set_ambient_cap(int cap)
     }
 }
 
-static void verbose_print_arguments(const char *label, int argc, char **argv)
+static bool is_verbose_enabled(void)
 {
-    // Output arguments if BACKUP_EXEC_VERBOSE=1
     const char *backup_exec_verbose = getenv("BACKUP_EXEC_VERBOSE");
     if ((backup_exec_verbose != NULL) &&
         (strcmp(backup_exec_verbose, "1") == 0))
     {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+static void verbose_print_arguments(const char *label, int argc, char **argv)
+{
+    // Output arguments if BACKUP_EXEC_VERBOSE=1
+    if (is_verbose_enabled()) {
         fprintf(stderr, "%s\n", label);
         for (int i = 0; i < argc; i++) {
             fprintf(stderr, "%d: <%s>\n", i, argv[i]);
@@ -48,8 +63,19 @@ static void verbose_print_arguments(const char *label, int argc, char **argv)
     }
 }
 
+static void verbose_printf(const char *format, ...)
+{
+    if (is_verbose_enabled()) {
+        va_list args;
+        va_start(args, format);
+        vfprintf(stderr, format, args);
+        va_end(args);
+    }
+}
+
 int main(int argc, char **argv)
 {
+    verbose_printf("backup-exec version " VERSION "\n");
     verbose_print_arguments("Original:", argc, argv);
 
     set_ambient_cap(CAP_DAC_READ_SEARCH);
@@ -64,7 +90,6 @@ int main(int argc, char **argv)
     verbose_print_arguments("Modified:", argc, new_argv);
 
     execv(new_argv[0], new_argv);
-    fprintf(stderr, "Cannot exec: %d %s\n", errno, strerror(errno));
-    perror("Cannot exec");
+    fprintf(stderr, "Cannot exec %s: (%d) %s\n", new_argv[0], errno, strerror(errno));
     return EXIT_FAILURE;
 }
