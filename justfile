@@ -13,6 +13,12 @@ restic_dir_prefix := "backup-exec-restic-"
 restic_amd64_dir := restic_dir_prefix + version + amd64_suffix
 restic_arm64_dir := restic_dir_prefix + version + arm64_suffix
 
+extra_tar_flags := if os() == "macos" {
+    "--no-mac-metadata --no-xattrs"
+} else {
+    ""
+}
+
 _default:
   @just --list --unsorted
 
@@ -49,4 +55,4 @@ _build exec_bin arch build_dir:
         -DVERSION='"{{version}}"' \
         backup-exec.c \
         -lcap-ng
-    tar -cvf "{{build}}/{{build_dir}}.tgz" -C "{{build}}" "{{build_dir}}"
+    tar {{extra_tar_flags}} -zcvf "{{build}}/{{build_dir}}.tgz" -C "{{build}}" "{{build_dir}}"
