@@ -64,3 +64,16 @@ As a more practical example, here's how to create a wrapper for the for the [Bor
 And also for [Restic backup](https://restic.net) binary:
 
     docker run --rm -v "$PWD":/work backup-exec gcc -o build/restic -Os -DEXEC_BIN='"/usr/local/libexec/restic"' backup-exec.c -lcap-ng
+
+## Using `just`
+
+A `justfile` is provided to build `backup-exec` for `borg` and `restic` using Docker for both AMD64 and ARM64 platforms using [`just`](https://just.systems):
+
+```
+Available recipes:
+    build-amd64 # Build borg and restic for amd64
+    build-arm64 # Build borg and restic for arm64
+    build-all   # Build borg and restic for both amd64 and arm64
+    clean       # Clean the build director
+    build-info  # Print version info
+```
