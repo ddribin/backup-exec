@@ -1,5 +1,13 @@
 version := "1.0.2"
 
+# 2024-05-05 05:36:05+00:00
+# Via date +%s
+export SOURCE_DATE_EPOCH := "1714887365"
+export GZIP := "--no-name"
+# For reproducible builds. See:
+# https://reproducible-builds.org/docs/archives/
+# https://serverfault.com/questions/110208/different-md5sums-for-same-tar-contents
+
 build := "build"
 
 amd64_suffix := "-amd64"
@@ -34,6 +42,11 @@ build-all: build-amd64 build-arm64
 clean:
     rm -rf "{{build}}"
 
+# Print version info
+build-info:
+    @echo Version {{version}}
+    @date -r "$SOURCE_DATE_EPOCH"
+
 _borg-amd64: (_build "borg" "amd64" borg_amd64_dir)
 _borg-arm64: (_build "borg" "arm64" borg_arm64_dir)
 
@@ -55,4 +68,10 @@ _build exec_bin arch build_dir:
         -DVERSION='"{{version}}"' \
         backup-exec.c \
         -lcap-ng
-    tar {{extra_tar_flags}} -zcvf "{{build}}/{{build_dir}}.tgz" -C "{{build}}" "{{build_dir}}"
+    gtar \
+        --sort=name \
+        --mtime="@${SOURCE_DATE_EPOCH}" \
+        --owner=0 --group=0 --numeric-owner \
+        --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
+        -zcvf "{{build}}/{{build_dir}}.tgz" \
+        -C "{{build}}" "{{build_dir}}"
