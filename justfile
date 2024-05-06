@@ -47,6 +47,10 @@ build-info:
     @echo Version {{version}}
     @date -r "$SOURCE_DATE_EPOCH"
 
+# Print SHA256 checksums
+checksums:
+    @cd "{{ build }}" && shasum -a256 *.tgz
+
 _borg-amd64: (_build "borg" "amd64" borg_amd64_dir)
 _borg-arm64: (_build "borg" "arm64" borg_arm64_dir)
 
