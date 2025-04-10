@@ -1,25 +1,32 @@
 version := "1.0.2"
 
 # 2024-05-05 05:36:05+00:00
-# Via date +%s
+# Via `date +%s` for current time.
+# Via `git log -1 --format=%ct v1.0.2` for the commit pointed to by a tag
+# Via `git for-each-ref --format="%(taggerdate:format:%s)" refs/tags/v1.0.2` for the
+# date of the annotated tag.
 export SOURCE_DATE_EPOCH := "1714887365"
 export GZIP := "--no-name"
 # For reproducible builds. See:
 # https://reproducible-builds.org/docs/archives/
 # https://serverfault.com/questions/110208/different-md5sums-for-same-tar-contents
+# https://stackoverflow.com/questions/13208734/get-the-time-and-date-of-git-tags
+
+docker := "podman"
+gnu_tar := "gtar"
 
 build := "build"
 
-amd64_suffix := "-amd64"
-arm64_suffix := "-arm64"
+_amd64_suffix := "-amd64"
+_arm64_suffix := "-arm64"
 
 borg_dir_prefix := "backup-exec-borg-"
-borg_amd64_dir := borg_dir_prefix + version + amd64_suffix
-borg_arm64_dir := borg_dir_prefix + version + arm64_suffix
+_borg_amd64_dir := borg_dir_prefix + version + _amd64_suffix
+_borg_arm64_dir := borg_dir_prefix + version + _arm64_suffix
 
 restic_dir_prefix := "backup-exec-restic-"
-restic_amd64_dir := restic_dir_prefix + version + amd64_suffix
-restic_arm64_dir := restic_dir_prefix + version + arm64_suffix
+_restic_amd64_dir := restic_dir_prefix + version + _amd64_suffix
+_restic_arm64_dir := restic_dir_prefix + version + _arm64_suffix
 
 extra_tar_flags := if os() == "macos" {
     "--no-mac-metadata --no-xattrs"
@@ -51,16 +58,16 @@ build-info:
 checksums:
     @cd "{{ build }}" && shasum -a256 *.tgz
 
-_borg-amd64: (_build "borg" "amd64" borg_amd64_dir)
-_borg-arm64: (_build "borg" "arm64" borg_arm64_dir)
+_borg-amd64: (_build "borg" "amd64" _borg_amd64_dir)
+_borg-arm64: (_build "borg" "arm64" _borg_arm64_dir)
 
-_restic-amd64: (_build "restic" "amd64" restic_amd64_dir)
-_restic-arm64: (_build "restic" "arm64" restic_arm64_dir)
+_restic-amd64: (_build "restic" "amd64" _restic_amd64_dir)
+_restic-arm64: (_build "restic" "arm64" _restic_arm64_dir)
 
 _build exec_bin arch build_dir:
     mkdir -p "{{build}}/{{build_dir}}"
-    docker build --platform linux/{{arch}} -t backup-exec .
-    docker run \
+    {{ docker }} build --platform linux/{{arch}} -t backup-exec .
+    {{ docker }} run \
         --platform linux/{{arch}} \
         --rm \
         -v "$PWD":/work \
@@ -72,7 +79,7 @@ _build exec_bin arch build_dir:
         -DVERSION='"{{version}}"' \
         backup-exec.c \
         -lcap-ng
-    gtar \
+    {{ gnu_tar }} \
         --sort=name \
         --mtime="@${SOURCE_DATE_EPOCH}" \
         --owner=0 --group=0 --numeric-owner \
