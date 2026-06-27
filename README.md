@@ -77,3 +77,21 @@ Available recipes:
     clean       # Clean the build director
     build-info  # Print version info
 ```
+
+# Reproducible Builds
+
+The `justfile` produces [reproducible builds](https://reproducible-builds.org): given the same source, building it again yields byte-for-byte identical binaries and tarballs. This lets anyone independently verify that a published release artifact was built from the corresponding source.
+
+A few things make the output deterministic:
+
+- **Pinned timestamp.** `SOURCE_DATE_EPOCH` is set to the release tag's commit date, so the compiler and archive use a fixed timestamp instead of the current time. See the [`SOURCE_DATE_EPOCH` specification](https://reproducible-builds.org/docs/source-date-epoch/).
+- **Deterministic gzip.** `GZIP=--no-name` keeps gzip from embedding the filename and modification time in the compressed output.
+- **Deterministic tar.** The archives are created with `tar --sort=name --mtime="@${SOURCE_DATE_EPOCH}" --owner=0 --group=0 --numeric-owner` and a `--pax-option` that strips `atime`/`ctime`, so file ordering, timestamps, and ownership are constant. On macOS, `--no-mac-metadata --no-xattrs` also prevents extended attributes from leaking in. See the notes on [reproducible archives](https://reproducible-builds.org/docs/archives/).
+- **Containerized toolchain.** Building inside the Docker/Podman image pins the compiler and library versions across machines.
+
+To verify a release, build the same tag yourself and compare checksums:
+
+    just build-all
+    just checksums
+
+Then compare the resulting SHA256 checksums against the ones published with the release. For an example, see the [v1.0.2 release](https://github.com/ddribin/backup-exec/releases/tag/v1.0.2), whose checksums match those produced by this build.
