@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0] - 2026-07-03
+
+### Changed
+
+- Update Dockerfile to use Ubuntu 22.04.
+
 ## [1.0.2] - 2023-05-05
 
 ### Changed
@@ -15,8 +21,9 @@
 
 ## [1.0.0] - 2021-01-21
 
-_Iintial Release._
+_Intial Release._
 
+[1.1.0]: https://github.com/ddribin/backup-exec/releases/tag/v1.1.0
 [1.0.2]: https://github.com/ddribin/backup-exec/releases/tag/v1.0.2
 [1.0.1]: https://github.com/ddribin/backup-exec/releases/tag/v1.0.1
 [1.0.0]: https://github.com/ddribin/backup-exec/releases/tag/v1.0.0

@@ -1,11 +1,12 @@
-version := "1.0.2"
+version := "1.1.0"
 
-# 2024-05-05 05:36:05+00:00
+# 2026-07-03T22:30:38+00:00
+# 2026-07-03T17:30:38-05:00
 # Via `date +%s` for current time.
 # Via `git log -1 --format=%ct v1.0.2` for the commit pointed to by a tag
 # Via `git for-each-ref --format="%(taggerdate:format:%s)" refs/tags/v1.0.2` for the
 # date of the annotated tag.
-export SOURCE_DATE_EPOCH := "1714887365"
+export SOURCE_DATE_EPOCH := "1783117838"
 export GZIP := "--no-name"
 # For reproducible builds. See:
 # https://reproducible-builds.org/docs/archives/
@@ -52,7 +53,8 @@ clean:
 # Print version info
 build-info:
     @echo Version {{version}}
-    @date -r "$SOURCE_DATE_EPOCH"
+    @date -r "$SOURCE_DATE_EPOCH" -u -Iseconds
+    @date -r "$SOURCE_DATE_EPOCH" -Iseconds
 
 # Print SHA256 checksums
 checksums:

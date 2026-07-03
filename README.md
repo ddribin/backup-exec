@@ -84,7 +84,7 @@ The `justfile` produces [reproducible builds](https://reproducible-builds.org): 
 
 A few things make the output deterministic:
 
-- **Pinned timestamp.** `SOURCE_DATE_EPOCH` is set to the release tag's commit date, so the compiler and archive use a fixed timestamp instead of the current time. See the [`SOURCE_DATE_EPOCH` specification](https://reproducible-builds.org/docs/source-date-epoch/).
+- **Pinned timestamp.** `SOURCE_DATE_EPOCH` is hardcoded in the `justfile` to a fixed release timestamp, so the compiler and archive use a fixed timestamp instead of the current time. See the [`SOURCE_DATE_EPOCH` specification](https://reproducible-builds.org/docs/source-date-epoch/).
 - **Deterministic gzip.** `GZIP=--no-name` keeps gzip from embedding the filename and modification time in the compressed output.
 - **Deterministic tar.** The archives are created with `tar --sort=name --mtime="@${SOURCE_DATE_EPOCH}" --owner=0 --group=0 --numeric-owner` and a `--pax-option` that strips `atime`/`ctime`, so file ordering, timestamps, and ownership are constant. On macOS, `--no-mac-metadata --no-xattrs` also prevents extended attributes from leaking in. See the notes on [reproducible archives](https://reproducible-builds.org/docs/archives/).
 - **Containerized toolchain.** Building inside the Docker/Podman image pins the compiler and library versions across machines.
